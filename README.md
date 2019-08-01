@@ -3,7 +3,7 @@
 
 ## Introduction 
 
-This project is based upon Udacity's Nanodegree Self-Driving Car project ['CarND-Advanced-Lane-Lines'](https://github.com/ralf-goettsche/CarND-Advanced-Lane-Lines). It has been extended by merging all the necessary procedures into two classes (one for camera calibration, the other for lane line detection), by far more filter options and procedures and by several display and print options added for analysis enabling a far better understanding of color filtering under varying conditions whereas the goal of lane line detection and the underlying algorithms remained.
+This project is based upon Udacity's Nanodegree Self-Driving Car project ['CarND-Advanced-Lane-Lines'](https://github.com/ralf-goettsche/CarND-Advanced-Lane-Lines). It has been extended by the color model representations for easier access to the color channels and filtering, by far more filter options and procedures collected from papers and blogs and by several display and print options added for analysis enabling a far better understanding of color filtering under varying conditions whereas the goal of lane line detection and the underlying algorithms remained the same.
 
 
 | <p align="center"><img src="MD_images/image.info.png" height=300 /></p> |  <p align="center"><img src="MD_images/image.small.png" height=300 /></p> |
@@ -57,7 +57,7 @@ In general, the classes can be initialized with the following options:
 
 ## Filtering Methods 
 
-The class `lane_lines` offers an interesting collection of procedures for filtering taken from different articles and blogs:
+The class `lane_lines` offers an interesting collection of procedures for filtering taken from different papers and blogs:
 
 * **`grad_color_filter`**  
   In this procedure the filters for lane line detection are defined and combined. Here, one can define some of his own,  
