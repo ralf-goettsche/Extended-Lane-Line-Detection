@@ -266,7 +266,7 @@ class lane_lines:
         cv2.putText(debug_image, str, (50,160), cv2.FONT_HERSHEY_TRIPLEX, fontScale=1.2, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
         str =("Sanity: {}".format(sanity))
         cv2.putText(debug_image, str, (50,200), cv2.FONT_HERSHEY_TRIPLEX, fontScale=1.2, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
-        str =("VP: ({},{})".format(vp[0][0],vp[1][0]))
+        str =("VP: ({:3.0f}, {:3.0f})".format(vp[0][0],vp[1][0]))
         cv2.putText(debug_image, str, (260,200), cv2.FONT_HERSHEY_TRIPLEX, fontScale=1.2, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
         cv2.rectangle(debug_image, (2,2), (640, 360), color=(255,255,255), thickness=4)
 
@@ -321,7 +321,7 @@ class lane_lines:
         cv2.putText(debug_image, str, (50,120), cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
         str =("Sanity: {}".format(sanity))
         cv2.putText(debug_image, str, (50,160), cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
-        str =("VP: ({},{})".format(vp[0][0],vp[1][0]))
+        str =("VP: ({:3.0f}, {:3.0f})".format(vp[0][0],vp[1][0]))
         cv2.putText(debug_image, str, (200,160), cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
         cv2.rectangle(debug_image, (2,2), (640, 180), color=(255,255,255), thickness=4)
 
@@ -388,7 +388,7 @@ class lane_lines:
         cv2.putText(debug_image, str, (50,120), cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
         str =("Sanity: {}".format(sanity))
         cv2.putText(debug_image, str, (50,160), cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
-        str =("VP: ({},{})".format(vp[0][0],vp[1][0]))
+        str =("VP: ({:3.0f}, {:3.0f})".format(vp[0][0],vp[1][0]))
         cv2.putText(debug_image, str, (200,160), cv2.FONT_HERSHEY_TRIPLEX, fontScale=0.8, color=(255,255,255), thickness=1, lineType = cv2.LINE_AA)
         cv2.rectangle(debug_image, (2,2), (640, 180), color=(255,255,255), thickness=4)
 
@@ -621,9 +621,10 @@ class lane_lines:
         ###
         # yellow lane lines
         ###
-        yellow_hsv_low  = np.array([ 10, 176, 150])
+        yellow_hsv_low  = np.array([ 10, 70, 200])
         yellow_hsv_high = np.array([ 40, 255, 255])
-        yellow_filter = self.color_mask(imagenorm, ll=yellow_hsv_low, ul=yellow_hsv_high, method='rgb2hsv')
+        #yellow_filter = self.color_mask(imagenorm, ll=yellow_hsv_low, ul=yellow_hsv_high, method='rgb2hsv')
+        yellow_filter = self.color_mask(image, ll=yellow_hsv_low, ul=yellow_hsv_high, method='rgb2hsv')
 
         ### LAB
         filter_lab_l = self.abs_sobel_thresh(image, orient='x', sobel_kernel=3, thresh=(10, 250), method='rgb2lab,l')
@@ -636,12 +637,13 @@ class lane_lines:
         color_filter[(white_filter == 1) | (yellow_filter == 1)] = 1
         
         # Combining hls filters
-        combined_hls  = np.zeros_like(combined_hls_s)
+        combined_hls  = np.zeros_like(combined_hls_l)
         combined_hls[(combined_hls_l == 1) | (combined_hls_s == 1) | (filter_lab_l == 1) | (filter_lab_b == 1)] = 1
  
         # Combining all filters
         combined  = np.zeros_like(combined_hls_l)
-        combined[((combined_hls_l == 1) | (combined_hls_s == 1)) | (color_filter == 1)] = 1
+        #combined[((combined_hls_l == 1) | (combined_hls_s == 1)) | (color_filter == 1)] = 1
+        combined[(combined_hls_l == 1) | (color_filter == 1)] = 1
        
         if self.deblev > 2:
             f, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8), (ax9, ax10), (ax11, ax12), (ax13, ax14)) = plt.subplots(7, 2, figsize=(24, 9), num='Grad Pics')
@@ -690,11 +692,14 @@ class lane_lines:
         imgy = img.shape[0]
         
         ## Definition of rectangle inside of image to be transformed
-        src = np.float32([[-104.67, 720.00], [572.00, 450.00], [717.00, 450.00], [1474.50, 720.00]]) # vp calc, straight_line2, dx=30
-        vp = np.array([[640],[421]])
-        
+        #src = np.float32([[-104.67, 720.00], [572.00, 450.00], [717.00, 450.00], [1474.50, 720.00]]) # vp calc, straight_line2, dx=30
+        #src = np.float32([[-imgx*0.08, imgy], [imgx * 0.44, imgy*0.625], [imgx*0.56, imgy*0.625], [imgx*1.08, imgy]]) # vp calc, straight_line2, dx=30
+        src = np.float32([[-imgx*0.08, imgy], [imgx * 0.44, imgy*0.625], [imgx*0.57, imgy*0.625], [imgx*1.15, imgy]]) # vp calc, straight_line2, dx=30
+        #vp = np.array([[640],[421]])
+        vp = np.array([[imgx*0.5],[imgy*0.33]])    
         ## Definition of target rectangle (full image area)
-        dst = np.float32([[0,720], [0,0], [1280,0], [1280,720]])
+        #dst = np.float32([[0,720], [0,0], [1280,0], [1280,720]])
+        dst = np.float32([[0,imgy], [0,0], [imgx,0], [imgx,imgy]])
         
         # Calculation of tranformation matrices
         M    = cv2.getPerspectiveTransform(src, dst)
@@ -733,7 +738,8 @@ class lane_lines:
         leftx_current = leftx_base
         rightx_current = rightx_base
         # Set the width of the windows +/- margin
-        margin = 100 # *50, *100*, 70
+        #margin = 100 # *50, *100*, 70
+        margin = 80 # *50, *100*, 70
         # Set minimum number of pixels found to recenter window
         minpix = 150 #50, *100*, *150, 200
         # Create empty lists to receive left and right line pixel indices
@@ -928,7 +934,8 @@ class lane_lines:
             #ax1.set_title('Original Image', fontsize=20)
             ax1.imshow(hsvimg, cmap='hsv')
             ax1.set_title('HSV img', fontsize=20)
-            ax2.imshow(hsvimgh, cmap='hsv')
+            #ax2.imshow(hsvimgh, cmap='hsv')
+            ax2.imshow(hsvimgh, cmap='Set3')
             ax2.set_title('HSV-H map', fontsize=20)
             #ax3.imshow(hsvimgs, cmap='gray')
             ax3.imshow(hsvimgs, cmap='Set3')
@@ -938,7 +945,8 @@ class lane_lines:
             ax4.set_title('HSV-V map', fontsize=20)
             ax5.imshow(hsvimgnorm, cmap='hsv')
             ax5.set_title('HSV-Norm', fontsize=20)
-            ax6.imshow(hsvimghnorm, cmap='hsv')
+            #ax6.imshow(hsvimghnorm, cmap='hsv')
+            ax6.imshow(hsvimghnorm, cmap='Set3')
             ax6.set_title('HSV-H-Norm', fontsize=20)
             #ax7.imshow(hsvimgsnorm, cmap='gray')
             ax7.imshow(hsvimgsnorm, cmap='Set3')
